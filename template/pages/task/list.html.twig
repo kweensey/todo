@@ -1,0 +1,75 @@
+{% extends 'layout/menu.html.twig' %}
+
+{% import 'macro/buttons.html.twig' as button %}
+{% import 'macro/form.html.twig' as form %}
+
+{% block javascript %}
+  <script src="/assets/js/task/list.js"></script>
+{% endblock %}
+
+{% block main %}
+  <div class="bg-white p-4 p-md-5 border-0 rounded-2 shadow">
+    <div class="mb-5 d-flex justify-content-between">
+      <div>
+        <h5>
+          <i class="fa-regular fa-square-check me-2 text-muted"></i>
+          Úkoly
+        </h5>
+        <small class="text-muted">Počet položek: {{ count }}</small>
+      </div>
+      <div>
+        {{ button.modal('Přidat', '/task/new', 'plus') }}
+      </div>
+    </div>
+    {% if count %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="fw-normal text-muted text-nowrap"></th>
+            <th class="fw-normal text-muted text-nowrap w-100">Název</th>
+            <th class="fw-normal text-muted text-end"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <td class="align-middle py-3">
+                <form class="task_status" data-form-action="/task/{{ item.uuid }}/{{ item.isCompleted() ? 'reopen' : 'complete' }}">
+                  {% set label = item.isCompleted()
+                    ? 'Znovu otevřít úkol'
+                    : 'Dokončit úkol'
+                  %}
+                  {{ form.checkbox(label, 'completed', item.isCompleted()) }}
+                </form>
+              </td>
+              <td class="align-middle py-3 small {{ item.isCompleted() ? 'text-decoration-line-through text-muted' }}">
+                {{ item.title }}
+              </td>
+              <td class="align-middle py-3 text-end">
+                {{ button.dropdown('ellipsis-vertical') }}
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-dark">
+                  <li>
+                    <a class="dropdown-item px-4" href="/task/{{ item.uuid }}" data-bs-show="modal" data-bs-target="#modal">
+                      <i class="fa-regular fa-pen-to-square fa-fw text-secondary me-2"></i>
+                      Upravit
+                    </a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <form class="task_delete" data-form-action="/task/{{ item.uuid }}" data-form-method="DELETE">
+                      {{ button.menusubmit('Smazat', 'trash', 'danger') }}
+                    </form>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      {% include 'misc/empty.html.twig' %}
+    {% endif %}
+  </div>
+{% endblock %}

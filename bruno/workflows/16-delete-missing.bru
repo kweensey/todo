@@ -1,0 +1,21 @@
+meta {
+  name: Deleted task returns 404
+  type: http
+  seq: 26
+}
+
+delete {
+  url: {{baseUrl}}/task/{{task_uuid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("HTTP 404", () => {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

@@ -1,0 +1,30 @@
+meta {
+  name: Log in as task owner
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/auth/access
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{loginEmail}}",
+    "password": "{{loginPassword}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 200) bru.setVar("owner_access_token", res.getBody().access_token);
+}
+
+tests {
+  test("Owner logged in", () => { expect(res.getStatus()).to.equal(200); });
+}

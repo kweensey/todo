@@ -1,0 +1,37 @@
+{## Form submit button. #}
+{% macro submit(title, icon) %}
+<button type="submit" class="btn btn-success text-success border-0 px-4 py-3">
+  <i class="fa-regular fa-{{ icon }} fa-fw me-2" data-form-icon></i>
+  <i class="fa-regular fa-sync fa-spin fa-fw me-2" data-form-spinner></i>
+  {{ title }}
+</button>
+{% endmacro %}
+
+{## Dropdown form submit button; optional danger styling is in use. #}
+{% macro menusubmit(title, icon, type = '') %}
+<button type="submit" class="dropdown-item px-4 {{ type ? 'text-' ~ type }}">
+  <i class="fa-regular fa-{{ icon }} fa-fw text-{{ type ?: 'secondary' }} me-2" data-form-icon></i>
+  <i class="fa-regular fa-sync fa-spin fa-fw text-{{ type ?: 'secondary' }} me-2" data-form-spinner></i>
+  {{ title }}
+</button>
+{% endmacro %}
+
+{## Modal-opening link. #}
+{% macro modal(title, target, icon) %}
+<a href="{{ target }}" class="btn btn-success text-success border-0 px-4 py-3" data-bs-show="modal" data-bs-target="#modal" data-size="md">
+  <i class="fa-regular fa-{{ icon }} fa-fw me-2"></i>
+  {{ title }}
+</a>
+{% endmacro %}
+
+{## Dropdown trigger icon. #}
+{% macro dropdown(icon) %}
+<button
+  type="button"
+  class="btn btn-white border-0 p-0"
+  data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
+  aria-label="Akce"
+>
+  <i class="fa-regular fa-fw fa-{{ icon }} text-secondary"></i>
+</button>
+{% endmacro %}

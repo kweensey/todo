@@ -1,0 +1,28 @@
+{% extends 'layout/fluid.html.twig' %}
+
+{% import 'macro/buttons.html.twig' as button %}
+{% import 'macro/form.html.twig' as form %}
+
+{% block javascript %}
+  <script src="/assets/js/user/login.js"></script>
+{% endblock %}
+
+{% block main %}
+  <h6 class="my-5 text-center">Vítejte, přihlaste se</h6>
+  <form id="user_login" data-form-action="/auth/session" novalidate>
+    <div class="mb-4">
+      {{ form.email('E-mail', 'email') }}
+      {{ form.feedback('email') }}
+    </div>
+    <div class="mb-3">
+      {{ form.password('Heslo', 'password', 'current-password') }}
+      {{ form.feedback('password') }}
+    </div>
+    <div class="mb-5 text-end">
+      <a href="/user/recover">Zapomenuté heslo?</a>
+    </div>
+    <div class="text-center">
+      {{ button.submit('Přihlásit', 'arrow-right-to-bracket') }}
+    </div>
+  </form>
+{% endblock %}

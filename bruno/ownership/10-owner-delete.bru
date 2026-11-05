@@ -1,0 +1,19 @@
+meta {
+  name: Owner removes created task
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{baseUrl}}/task/{{owner_task_uuid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{owner_access_token}}
+}
+
+tests {
+  test("Owner can delete", () => { expect(res.getStatus()).to.equal(204); });
+}

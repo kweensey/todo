@@ -1,0 +1,30 @@
+meta {
+  name: Task missing title
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{baseUrl}}/task
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {}
+}
+
+tests {
+  test("HTTP 422", () => {
+    expect(res.getStatus()).to.equal(422);
+  });
+  test("Validation shape", () => { expect(res.getBody().invalid_parameters).to.have.property("title"); });
+}

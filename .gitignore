@@ -1,0 +1,27 @@
+# Composer
+/vendor/
+
+# PHPUnit
+/.phpunit.result.cache
+/.phpunit.cache
+
+# phpDocumentor
+/.phpdoc/
+/docs/api/
+
+# Adminer
+/public/adminer.php
+/public/adminer.sql
+/public/adminer.sql.gz
+/public/adminer.css
+/public/adminer-dark.css
+
+# Config
+/config/app.php
+/config/db.php
+/config/mail.php
+
+# Storage
+/cert/
+/data/
+/log/

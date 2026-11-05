@@ -1,0 +1,21 @@
+meta {
+  name: Complete task
+  type: http
+  seq: 21
+}
+
+post {
+  url: {{baseUrl}}/task/{{task_uuid}}/complete
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("HTTP 204", () => {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

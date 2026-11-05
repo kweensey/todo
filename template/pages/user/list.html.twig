@@ -1,0 +1,110 @@
+{% extends 'layout/menu.html.twig' %}
+
+{% import 'macro/buttons.html.twig' as button %}
+{% import 'macro/common.html.twig' as common %}
+
+{% set statusColors = ['secondary', 'primary', 'success', 'danger'] %}
+{% set roleColors = ['primary', 'success'] %}
+
+{% block javascript %}
+  <script src="/assets/js/user/list.js"></script>
+{% endblock %}
+
+{% block main %}
+  <div class="bg-white p-4 p-md-5 border-0 rounded-2 shadow">
+    <div class="mb-5 d-flex justify-content-between">
+      <div>
+        <h5>
+          <i class="fa-regular fa-user me-2 text-muted"></i>
+          Uživatelé
+        </h5>
+        <small class="text-muted">Počet položek: {{ count }}</small>
+      </div>
+      <div>
+        {% if actions.create %}
+          <span class="ms-3">
+            {{ button.modal('Přidat', '/user/new', 'plus') }}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+    {% if count %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="fw-normal text-muted text-nowrap">Vytvořeno</th>
+              <th class="fw-normal text-muted text-nowrap">E-Mail</th>
+              <th class="fw-normal text-muted text-nowrap">Stav</th>
+              <th class="fw-normal text-muted text-nowrap">Role</th>
+              <th class="fw-normal text-muted text-end"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+              <tr>
+                <td class="align-middle py-3 small">{{ item.created_at|date('j. n. Y H:i') }}</td>
+                <td class="align-middle py-3 small">{{ item.email }}</td>
+                <td class="align-middle py-3 small">{{ common.badge(item.status.title, statusColors[item.status.value]) }}</td>
+                <td class="align-middle py-3 small">{{ common.badge(item.role.title, roleColors[item.role.value]) }}</td>
+                <td class="align-middle py-3 text-end">
+                  {% set groups = item.actions|filter(group => group|filter(enabled => enabled)|length) %}
+                  {% if groups %}
+                    {{ button.dropdown('ellipsis-vertical') }}
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-dark">
+                      {% for group in groups %}
+                        {% if not loop.first %}
+                          <li>
+                            <hr class="dropdown-divider">
+                          </li>
+                        {% endif %}
+                        {% if group.invite %}
+                          <li>
+                            <form class="user_invite" data-form-action="/user/{{ item.uuid }}/invite">
+                              {{ button.menusubmit('Pozvat', 'paper-plane') }}
+                            </form>
+                          </li>
+                        {% endif %}
+                        {% if group.edit %}
+                          <li>
+                            <a class="dropdown-item px-4" href="/user/{{ item.uuid }}" data-bs-show="modal" data-bs-target="#modal">
+                              <i class="fa-regular fa-pen-to-square fa-fw text-secondary me-2"></i>
+                              Upravit
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if group.block %}
+                          <li>
+                            <form class="user_block" data-form-action="/user/{{ item.uuid }}/block">
+                              {{ button.menusubmit('Blokovat', 'ban', 'danger') }}
+                            </form>
+                          </li>
+                        {% endif %}
+                        {% if group.unblock %}
+                          <li>
+                            <form class="user_unblock" data-form-action="/user/{{ item.uuid }}/unblock">
+                              {{ button.menusubmit('Odblokovat', 'ban', 'danger') }}
+                            </form>
+                          </li>
+                        {% endif %}
+                        {% if group.delete %}
+                          <li>
+                            <form class="user_delete" data-form-action="/user/{{ item.uuid }}" data-form-method="DELETE">
+                              {{ button.menusubmit('Smazat', 'trash', 'danger') }}
+                            </form>
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      {% include 'misc/empty.html.twig' %}
+    {% endif %}
+  </div>
+{% endblock %}

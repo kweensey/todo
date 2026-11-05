@@ -1,0 +1,19 @@
+meta {
+  name: Other user cannot delete task
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/task/{{owner_task_uuid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{other_access_token}}
+}
+
+tests {
+  test("Delete hidden", () => { expect(res.getStatus()).to.equal(404); });
+}

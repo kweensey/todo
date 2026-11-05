@@ -1,0 +1,27 @@
+meta {
+  name: Revoke token family
+  type: http
+  seq: 28
+}
+
+post {
+  url: {{baseUrl}}/auth/revoke
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "refresh_token": "{{refresh_token}}"
+  }
+}
+
+tests {
+  test("HTTP 204", () => {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

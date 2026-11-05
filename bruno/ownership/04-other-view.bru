@@ -1,0 +1,19 @@
+meta {
+  name: Other user cannot access edit page
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/task/{{owner_task_uuid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{other_access_token}}
+}
+
+tests {
+  test("Private task hidden", () => { expect(res.getStatus()).to.equal(404); });
+}

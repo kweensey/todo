@@ -1,0 +1,27 @@
+meta {
+  name: Revoked refresh token rejected
+  type: http
+  seq: 29
+}
+
+post {
+  url: {{baseUrl}}/auth/refresh
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "refresh_token": "{{refresh_token}}"
+  }
+}
+
+tests {
+  test("HTTP 401", () => {
+    expect(res.getStatus()).to.equal(401);
+  });
+}

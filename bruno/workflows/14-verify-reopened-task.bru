@@ -1,0 +1,20 @@
+meta {
+  name: Reopened task offers complete action
+  type: http
+  seq: 24
+}
+
+get {
+  url: {{baseUrl}}/task
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("HTTP 200", () => { expect(res.getStatus()).to.equal(200); });
+  test("Task is open", () => { expect(res.getBody()).to.include('/task/' + bru.getVar('task_uuid') + '/complete'); });
+}

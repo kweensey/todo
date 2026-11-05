@@ -1,0 +1,996 @@
+openapi: 3.1.0
+info:
+  title: Oasys To-do Demo HTTP API
+  version: 1.0.0
+  description: Source-aligned contract for JSON/action endpoints in src/Controllers. HTML template routes are intentionally
+    excluded. All endpoints are relative to the application root. The API is action-oriented and does not use REST
+    verbs uniformly.
+servers:
+- url: http://localhost:8000
+  description: Example local PHP development server (bearer API only); Secure browser cookies require HTTPS.
+tags:
+- name: Authentication
+- name: Browser sessions
+- name: Tasks
+- name: User administration
+- name: Account settings
+- name: Registration
+- name: Recovery
+paths:
+  /auth/access:
+    post:
+      tags:
+      - Authentication
+      summary: Exchange email and password for tokens
+      operationId: exchange_email_and_password_for_tokens
+      responses:
+        '200':
+          description: Token pair
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tokens'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Login uses registered active accounts; invalid credentials return 422 with a password field error.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessRequest'
+  /auth/refresh:
+    post:
+      tags:
+      - Authentication
+      summary: Rotate refresh token
+      operationId: rotate_refresh_token
+      responses:
+        '200':
+          description: Token pair
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tokens'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Refresh tokens rotate on use; reuse of an old token revokes the token family.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+  /auth/revoke:
+    post:
+      tags:
+      - Authentication
+      summary: Revoke refresh-token family
+      operationId: revoke_refresh_token_family
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+  /auth/session:
+    post:
+      tags:
+      - Browser sessions
+      summary: Create cookie session
+      operationId: create_cookie_session
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Browser login. Sets __Host-access_token, refresh_token (Path=/auth/session), and __Host-csrf_token;
+        cookies are Secure, SameSite=Lax. Requires HTTPS to work in browsers.
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/origin'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessRequest'
+    delete:
+      tags:
+      - Browser sessions
+      summary: Delete cookie session
+      operationId: delete_cookie_session
+      responses:
+        '204':
+          description: No content
+        '403':
+          $ref: '#/components/responses/Error403'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Requires Origin, X-CSRF-Token and matching CSRF cookie; clears all session cookies.
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/origin'
+      - $ref: '#/components/parameters/csrfHeader'
+      - $ref: '#/components/parameters/csrfCookie'
+  /auth/session/check:
+    get:
+      tags:
+      - Browser sessions
+      summary: Validate access session
+      operationId: validate_access_session
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Error401'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+  /auth/session/refresh:
+    post:
+      tags:
+      - Browser sessions
+      summary: Refresh cookie session
+      operationId: refresh_cookie_session
+      responses:
+        '204':
+          description: No content
+        '403':
+          $ref: '#/components/responses/Error403'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Requires refresh_token cookie plus Origin, X-CSRF-Token and matching CSRF cookie. Rotates both
+        auth cookies.
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/origin'
+      - $ref: '#/components/parameters/csrfHeader'
+      - $ref: '#/components/parameters/csrfCookie'
+      - $ref: '#/components/parameters/refreshCookie'
+  /task:
+    post:
+      tags:
+      - Tasks
+      summary: Create task
+      operationId: create_task
+      responses:
+        '201':
+          description: Created resource ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskWrite'
+  /task/{uuid}:
+    post:
+      tags:
+      - Tasks
+      summary: Update task title
+      operationId: update_task_title
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: This application uses POST for updates, not PUT/PATCH.
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskWrite'
+    delete:
+      tags:
+      - Tasks
+      summary: Delete task
+      operationId: delete_task
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+  /task/{uuid}/complete:
+    post:
+      tags:
+      - Tasks
+      summary: Complete task
+      operationId: complete_task
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+  /task/{uuid}/reopen:
+    post:
+      tags:
+      - Tasks
+      summary: Reopen task
+      operationId: reopen_task
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+  /user:
+    post:
+      tags:
+      - User administration
+      summary: Create user draft
+      operationId: create_user_draft
+      responses:
+        '201':
+          description: Created resource ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Admin only; creates draft user. Role 0=user, 1=admin.
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+  /user/{uuid}:
+    post:
+      tags:
+      - User administration
+      summary: Update user draft or role
+      operationId: update_user_draft_or_role
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Admin only. Registered users can change role, draft users can also change email.
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+    delete:
+      tags:
+      - User administration
+      summary: Delete draft or invited user
+      operationId: delete_draft_or_invited_user
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Admin only; active users cannot be deleted through this operation.
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+  /user/{uuid}/invite:
+    post:
+      tags:
+      - User administration
+      summary: Invite user
+      operationId: invite_user
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Admin only; sends an invitation email and starts invitation workflow.
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+  /user/{uuid}/block:
+    post:
+      tags:
+      - User administration
+      summary: Block registered user
+      operationId: block_registered_user
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Admin only; revokes refresh tokens.
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+  /user/{uuid}/unblock:
+    post:
+      tags:
+      - User administration
+      summary: Unblock blocked user
+      operationId: unblock_blocked_user
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Admin only.
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+  /user/me/change/email:
+    post:
+      tags:
+      - Account settings
+      summary: Request email change code
+      operationId: request_email_change_code
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeEmail'
+  /user/me/change/email/confirm:
+    post:
+      tags:
+      - Account settings
+      summary: Confirm email change
+      operationId: confirm_email_change
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeCode'
+  /user/me/change/password:
+    post:
+      tags:
+      - Account settings
+      summary: Change password
+      operationId: change_password
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Clears browser session cookies on success; clients should discard previously issued tokens as
+        applicable.
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+  /user/{uuid}/register/email:
+    post:
+      tags:
+      - Registration
+      summary: Start invited-user email verification
+      operationId: start_invited_user_email_verification
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteEmail'
+  /user/{uuid}/register/email/confirm:
+    post:
+      tags:
+      - Registration
+      summary: Confirm registration email code
+      operationId: confirm_registration_email_code
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmInviteEmail'
+  /user/{uuid}/register/password:
+    post:
+      tags:
+      - Registration
+      summary: Finish invited-user registration
+      operationId: finish_invited_user_registration
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterPassword'
+  /user/recover:
+    post:
+      tags:
+      - Recovery
+      summary: Request password recovery
+      operationId: request_password_recovery
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Returns 204 for unknown registered email addresses as well, to reduce account enumeration.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoveryEmail'
+  /user/{uuid}/recover:
+    post:
+      tags:
+      - Recovery
+      summary: Set recovered password
+      operationId: set_recovered_password
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Error400'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoveryPassword'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: __Host-access_token
+      description: Browser access token; unsafe methods require Origin + X-CSRF-Token matching __Host-csrf_token
+        cookie.
+  schemas:
+    AccessRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - email
+      - password
+      properties:
+        email: &id002
+          type: string
+          format: email
+          maxLength: 128
+        password: &id003
+          type: string
+          format: password
+          writeOnly: true
+    RefreshRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - refresh_token
+      properties:
+        refresh_token: &id001
+          type: string
+          pattern: ^[A-Fa-f0-9]{32}\.[A-Za-z0-9_-]{43}$
+    Tokens:
+      type: object
+      additionalProperties: false
+      required:
+      - access_token
+      - refresh_token
+      - token_type
+      properties:
+        access_token: &id008
+          type: string
+        refresh_token: *id001
+        token_type:
+          type: string
+          const: Bearer
+    IdResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - uuid
+      properties:
+        uuid: &id007
+          type: string
+          format: uuid
+    TaskWrite:
+      type: object
+      additionalProperties: false
+      required:
+      - title
+      properties:
+        title:
+          type: string
+          maxLength: 255
+    UserCreate:
+      type: object
+      additionalProperties: false
+      required:
+      - email
+      - role
+      properties:
+        email: *id002
+        role:
+          type: integer
+          enum:
+          - 0
+          - 1
+          description: 0=user, 1=admin
+    UserUpdate:
+      type: object
+      additionalProperties: false
+      required: []
+      properties:
+        email: *id002
+        role:
+          type: integer
+          enum:
+          - 0
+          - 1
+      description: Only role may be changed for registered users; email is editable only in draft state.
+    ChangeEmail:
+      type: object
+      additionalProperties: false
+      required:
+      - email
+      properties:
+        email: *id002
+    ChangeCode:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      properties:
+        code: &id005
+          type: string
+          pattern: ^[0-9]{6}$
+    ChangePassword:
+      type: object
+      additionalProperties: false
+      required:
+      - password_current
+      - password_new
+      - password_check
+      properties:
+        password_current: *id003
+        password_new: &id004
+          type: string
+          minLength: 15
+          maxLength: 128
+          format: password
+          writeOnly: true
+        password_check: *id004
+    InviteEmail:
+      type: object
+      additionalProperties: false
+      required:
+      - email
+      - token
+      properties:
+        email: *id002
+        token: &id006
+          type: string
+          minLength: 32
+          maxLength: 32
+          pattern: ^[A-Fa-f0-9]{32}$
+    ConfirmInviteEmail:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - token
+      properties:
+        code: *id005
+        token: *id006
+    RegisterPassword:
+      type: object
+      additionalProperties: false
+      required:
+      - password
+      - password_check
+      - token
+      properties:
+        password: *id004
+        password_check: *id004
+        token: *id006
+    RecoveryEmail:
+      type: object
+      additionalProperties: false
+      required:
+      - email
+      properties:
+        email: *id002
+    RecoveryPassword:
+      type: object
+      additionalProperties: false
+      required:
+      - token
+      - password
+      - password_check
+      properties:
+        token: *id006
+        password: *id004
+        password_check: *id004
+    ValidationError:
+      type: object
+      required:
+      - invalid_parameters
+      properties:
+        invalid_parameters:
+          type: object
+          additionalProperties: true
+          description: Map of rejected field names to validation messages.
+      example:
+        invalid_parameters:
+          title: Required
+  parameters:
+    uuid:
+      name: uuid
+      in: path
+      required: true
+      schema: *id007
+    origin:
+      name: Origin
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uri
+      description: Must match configured app.host exactly (without trailing slash).
+    csrfHeader:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema: *id008
+      description: Must equal __Host-csrf_token cookie.
+    refreshCookie:
+      name: refresh_token
+      in: cookie
+      required: true
+      schema:
+        type: string
+      description: Secure HttpOnly refresh token from /auth/session, with Path=/auth/session.
+    csrfCookie:
+      name: __Host-csrf_token
+      in: cookie
+      required: true
+      schema:
+        type: string
+        pattern: ^[a-f0-9]{64}$
+      description: Double-submit cookie; must equal X-CSRF-Token.
+  responses:
+    Error400:
+      description: Malformed JSON or invalid JSON top-level type
+      content:
+        text/plain:
+          schema:
+            type: string
+    Error401:
+      description: Authentication failed or token missing/expired
+      content:
+        text/plain:
+          schema:
+            type: string
+    Error403:
+      description: Forbidden or invalid CSRF/origin
+      content:
+        text/plain:
+          schema:
+            type: string
+    Error404:
+      description: Unknown resource or route
+      content:
+        text/plain:
+          schema:
+            type: string
+    Error409:
+      description: Business/domain state conflict
+      content:
+        text/plain:
+          schema:
+            type: string
+    Error422:
+      description: Input validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+    Error429:
+      description: Rate/attempt limit exceeded
+      content:
+        text/plain:
+          schema:
+            type: string
+    Error500:
+      description: Server error
+      content:
+        text/plain:
+          schema:
+            type: string
