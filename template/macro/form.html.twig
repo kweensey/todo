@@ -1,0 +1,92 @@
+{## Feedback below the field #}
+{% macro feedback(name) %}
+<div class="invalid-feedback text-start mb-2" data-form-invalid="{{ name }}" style="display: none;"></div>
+{% endmacro %}
+
+{## Field label #}
+{% macro label(title, name) %}
+<label class="form-label w-100 text-start" for="{{ name }}">
+  {{ title }}
+</label>
+{% endmacro %}
+
+{## Hidden input #}
+{% macro hidden(name, value) %}
+<input
+  type="hidden"
+  name="{{ name }}"
+  value="{{ value }}"
+>
+{% endmacro %}
+
+{## Text input #}
+{% macro textbox(title, name) %}
+{% import _self as this %}
+{{ this.label(title, name) }}
+<input
+  id="{{ name }}"
+  class="form-control w-100 border-2"
+  type="text"
+  autocomplete="false"
+  name="{{ name }}"
+>
+{% endmacro %}
+
+{## Password input #}
+{% macro password(title, name) %}
+{% import _self as this %}
+{{ this.label(title, name) }}
+<input
+  id="{{ name }}"
+  class="form-control w-100 border-2"
+  type="password"
+  name="{{ name }}"
+>
+{% endmacro %}
+
+{## Email input #}
+{% macro email(title, name, value = '', disabled = false) %}
+{% import _self as this %}
+{{ this.label(title, name) }}
+<input
+  id="{{ name }}"
+  class="form-control w-100 border-2"
+  name="{{ name }}"
+  type="email"
+  placeholder="např. jan.novak@email.cz"
+  value="{{ value }}"
+  {{ disabled ? 'disabled' }}
+>
+{% endmacro %}
+
+{## Select, populated with backed enum cases #}
+{% macro select(title, name, options, value, data) %}
+{% import _self as this %}
+{{ this.label(title, name) }}
+<select
+  id="{{ name }}"
+  class="form-select w-100 me-2 border-2"
+  name="{{ name }}"
+  {% for key, attribute in data %}
+    data-{{ key }}="{{ attribute }}"
+  {% endfor %}
+>
+  <option value="null" {{ value is same as(null) ? 'selected' }}>- vyberte -</option>
+  {% for option in options %}
+    <option value="{{ option.value }}" {{ option.value is same as(value) ? 'selected' }}>
+      {{ option.title }}
+    </option>
+  {% endfor %}
+</select>
+{% endmacro %}
+
+{## Checkbox #}
+{% macro checkbox(label, name, checked) %}
+<input
+  class="form-check-input border-2"
+  type="checkbox"
+  name="{{ name }}"
+  aria-label="{{ label }}"
+  {{ checked ? 'checked' }}
+>
+{% endmacro %}

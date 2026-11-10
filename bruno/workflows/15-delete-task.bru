@@ -1,0 +1,21 @@
+meta {
+  name: Delete task
+  type: http
+  seq: 25
+}
+
+delete {
+  url: {{baseUrl}}/task/{{task_uuid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("HTTP 204", () => {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

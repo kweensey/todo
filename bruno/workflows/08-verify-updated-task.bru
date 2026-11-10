@@ -1,0 +1,20 @@
+meta {
+  name: Updated title is persisted on edit page
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{baseUrl}}/task/{{task_uuid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("Edit page loads", () => { expect(res.getStatus()).to.equal(200); });
+  test("Updated title is shown", () => { expect(res.getBody()).to.include('value="Bruno updated task"'); });
+}

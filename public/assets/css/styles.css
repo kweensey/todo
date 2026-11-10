@@ -1,0 +1,238 @@
+body {
+  font-family: "Poppins", "Calibri" !important;
+}
+
+.page-fade-in {
+  animation: page-fade-in 1s ease both;
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-fade-in { animation: none; }
+}
+
+[type="submit"]:not(:disabled) [data-form-spinner] {
+  display: none;
+}
+
+[type="submit"]:disabled [data-form-icon] {
+  display: none;
+}
+
+.progress-stacked { 
+  height: 5px;
+}
+
+.progress {
+  height: 5px;
+  width: 0;
+  animation: grow 2s ease forwards;
+}
+
+@keyframes grow {
+  from {
+    width: 0;
+  }
+  to {
+    width: calc(var(--w) * 1%);
+  }
+}
+
+.logo {
+  max-width: 300px;
+  max-height: 48px;
+  width: auto;
+  height: auto;
+}
+
+.modal {
+  backdrop-filter: blur(5px);
+}
+
+.table tbody tr:last-of-type {
+  border-bottom-color: #fff;
+}
+
+.table td:first-of-type,
+.table th:first-of-type {
+  padding-left: 0px;
+}
+
+.table td:last-of-type,
+.table th:last-of-type {
+  padding-right: 0px;
+}
+
+/* .table th {
+  border-bottom-width: 2px;
+} */
+
+/* .btn[data-bs-toggle="dropdown"] i {
+  color: rgba(var(--bs-secondary-rgb), 1) !important;
+} */
+
+.btn.show[data-bs-toggle="dropdown"] i {
+  color: rgba(var(--bs-primary-rgb), 1) !important;
+}
+
+.btn.btn-primary {
+  background-color: #e5f2ff;
+}
+
+.btn.btn-success {
+  background-color: #e9f6ec;
+}
+
+.btn.btn-danger {
+  background-color: #fbeaec;
+}
+
+.btn.btn-warning {
+  background-color: rgba(255, 193, 7, .25);
+  color: #e5ad06 !important;
+}
+
+.btn.btn-muted {
+  background-color: rgba(248, 249, 250);
+}
+
+.badge.text-bg-primary {
+  background-color: #e5f2ff !important;
+}
+
+.badge.text-bg-secondary {
+  background-color: #e9ecef !important;
+}
+
+.badge.text-bg-success {
+  background-color: #e9f6ec !important;
+}
+
+.badge.text-bg-warning {
+  background-color: rgba(255, 193, 7, .25) !important;
+  color: #e5ad06 !important;
+}
+
+.badge.text-bg-danger {
+  background-color: #fbeaec !important;
+}
+
+.alert.alert-primary {
+  background-color: #e5f2ff;
+  color: rgba(var(--bs-primary-rgb), 1) !important;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+	color: rgba(var(--bs-primary-rgb),var(--bs-text-opacity));
+	background-color: #e5f2ff;
+}
+
+.dropdown-divider {
+  border-color: #dee2e6;
+}
+
+.shadow {
+  box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.02) !important;
+}
+
+.shadow-dark {
+  box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1) !important;
+}
+
+.border-dashed {
+  border-style: dashed !important;
+}
+
+.cursor-move {
+  cursor: move;
+}
+
+.check-wrap {
+  cursor: pointer;
+}
+
+.check-wrap.active {
+  border-color: #86b7fe !important;
+}
+
+.check-wrap.active i {
+  color: #86b7fe !important;
+}
+
+.nav-item.me-5 {
+  margin-right: 2.8rem !important;
+}
+
+.nav-tabs {
+  --bs-nav-tabs-border-width: 2px;
+}
+
+.nav-tabs a {
+  text-decoration: none !important;
+  color: var(--bs-secondary-color);
+}
+
+.nav-tabs a.active,
+.nav-tabs a:hover {
+  color: var(--bs-body-color) !important;
+}
+
+.c_burger {
+  cursor: pointer;
+  padding: 9px 0px;
+  position: relative;
+}
+
+.c_burger .c_burger-icon {
+  background: #000;
+  display: block;
+  position: relative;
+  height: 2px;
+  width: 24px;
+  transition: background-color .2s ease-out;
+}
+
+.c_burger .c_burger-icon::before,
+.c_burger .c_burger-icon::after {
+  content: '';
+  background: #000;
+  display: block;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  transition: all .2s ease-out;
+}
+
+.c_burger .c_burger-icon::before {
+  top: 8px;
+}
+
+.c_burger .c_burger-icon::after {
+  top: -8px;
+}
+
+.c_burger-btn {
+  display: none;
+}
+
+.c_burger-btn:checked ~ .c_burger .c_burger-icon {
+  background: transparent;
+}
+
+.c_burger-btn:checked ~ .c_burger .c_burger-icon::before {
+  transform: rotate(-45deg);
+}
+
+.c_burger-btn:checked ~ .c_burger .c_burger-icon::after {
+  transform: rotate(45deg);
+}
+
+.c_burger-btn:checked ~ .c_burger:not(.steps) .c_burger-icon::before,
+.c_burger-btn:checked ~ .c_burger:not(.steps) .c_burger-icon::after {
+  top: 0;
+}

@@ -1,0 +1,10 @@
+<?php declare(strict_types=1);
+
+return [
+  'username' => 'johndoe',
+  'password' => 'secret',
+  'host'     => 'host.com',
+  'from'     => 'notifications@my.app',
+  'port'     => 587,
+  'charset'  => 'UTF-8'
+];

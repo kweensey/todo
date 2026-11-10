@@ -1,0 +1,31 @@
+{% import 'macro/buttons.html.twig' as button %}
+{% import 'macro/form.html.twig' as form %}
+
+{% set editing = item is defined and item %}
+
+<div class="modal-content border-0 p-4 shadow">
+  <div class="modal-header border-0">
+    <h1 class="modal-title fs-5 text-truncate">
+      <i class="fa-regular fa-user me-2 text-muted"></i>
+      {{ editing ? item.email : 'Nový uživatel' }}
+    </h1>
+    <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <form id="user_edit" data-form-action="{{ editing ? '/user/' ~ item.uuid : '/user' }}" novalidate>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-12 col-md-7 mb-4">
+          {{ form.email('E-mail', 'email', editing ? item.email : '', editing and item.status.name != 'DRAFT') }}
+          {{ form.feedback('email') }}
+        </div>
+        <div class="col-12 col-md-5 mb-4">
+          {{ form.select('Role', 'role', roles, editing ? item.role.value : null, {'form-cast': 'int', 'toggle-name': 'role'}) }}
+          {{ form.feedback('role') }}
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer border-0 justify-content-center">
+      {{ button.submit('Uložit', 'floppy-disk') }}
+    </div>
+  </form>
+</div>

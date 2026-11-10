@@ -1,0 +1,40 @@
+meta {
+  name: Create task
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{baseUrl}}/task
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Bruno integration smoke test"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 201) {
+    bru.setVar("task_uuid", res.getBody().uuid);
+  }
+}
+
+tests {
+  test("HTTP 201", () => {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("Response contains UUID", () => {
+    expect(res.getBody().uuid).to.match(/^[A-F0-9]{8}(?:-[A-F0-9]{4}){3}-[A-F0-9]{12}$/);
+  });
+}

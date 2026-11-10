@@ -1,0 +1,30 @@
+meta {
+  name: Log in as second user
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/auth/access
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{secondEmail}}",
+    "password": "{{secondPassword}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 200) bru.setVar("other_access_token", res.getBody().access_token);
+}
+
+tests {
+  test("Second user logged in", () => { expect(res.getStatus()).to.equal(200); });
+}

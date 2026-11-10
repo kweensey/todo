@@ -1,0 +1,76 @@
+{% extends 'layout/base.html.twig' %}
+
+{% import 'macro/buttons.html.twig' as button %}
+
+{% block javascript %}
+  {{ parent() }}
+  <script src="/assets/js/user/user.js"></script>
+  <script src="/assets/js/main.js"></script>
+{% endblock %}
+
+{% block content %}
+  <nav class="navbar navbar-expand-lg bg-body-tertiary py-5">
+    <div class="container">
+      <a class="navbar-brand me-5" href="/task">
+        <img src="/assets/img/logo.png" alt="logo" height="30" class="d-inline-block align-text-top">
+      </a>
+      <input id="burger" type="checkbox" class="c_burger-btn" autocomplete="off">
+      <label for="burger" class="navbar-toggler border-0 mb-0 c_burger" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="c_burger-icon"></span>
+      </label>
+      <div id="navbarNav" class="collapse navbar-collapse justify-content-between">
+        <ul class="navbar-nav py-3 py-md-0">
+          {% if actor.isAdmin() %}
+          <li class="nav-item me-5">
+            <a class="nav-link px-0" href="/user">
+              <i class="fa-regular fa-fw fa-user me-2"></i>
+              Uživatelé
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item me-5">
+            <a class="nav-link px-0" href="/task">
+              <i class="fa-regular fa-fw fa-square-check me-2"></i>
+              Úkoly
+            </a>
+          </li>
+        </ul>
+        <div class="position-relative text-center">
+          <button type="button" class="btn border-0 bg-transparent p-0 text-start" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            <span class="d-inline-block">
+              <span class="me-3 d-flex justify-content-center align-items-center rounded-circle" style="width: 40px; height: 40px; background: rgba(0, 123, 255, .1);">
+                <span class="text-primary fw-bold">{{ actor.email|first|upper }}</span>
+              </span>
+            </span>
+            <span class="text-muted">{{ actor.email }}</span>
+            <i class="fa-regular fa-angle-down text-muted ms-2"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end border-0 shadow-dark">
+            <li>
+              <a class="dropdown-item px-4" href="/user/me/change/email" data-bs-show="modal" data-bs-target="#modal">
+                <i class="fa-regular fa-envelope fa-fw text-secondary me-2"></i>
+                Změna e-mailu
+              </a>
+              <a class="dropdown-item px-4" href="/user/me/change/password" data-bs-show="modal" data-bs-target="#modal">
+                <i class="fa-regular fa-lock fa-fw text-secondary me-2"></i>
+                Změna hesla
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <form id="user_logout" data-form-method="DELETE" data-form-action="/auth/session">
+                {{ button.menusubmit('Odhlásit', 'arrow-right-from-bracket', 'danger') }}
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    {% block main %}{% endblock %}
+    {% include 'layout/footer.html.twig' %}
+  </div>
+{% endblock %}

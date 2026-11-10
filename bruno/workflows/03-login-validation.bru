@@ -1,0 +1,28 @@
+meta {
+  name: Missing login password
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/auth/access
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "nobody@example.test"
+  }
+}
+
+tests {
+  test("HTTP 422", () => {
+    expect(res.getStatus()).to.equal(422);
+  });
+  test("Validation shape", () => { expect(res.getBody()).to.have.property("invalid_parameters"); });
+}

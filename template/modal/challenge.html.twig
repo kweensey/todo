@@ -1,0 +1,28 @@
+{% import 'macro/buttons.html.twig' as button %}
+{% import 'macro/form.html.twig' as form %}
+
+<div class="modal-content border-0 p-4 shadow">
+  <div class="modal-header border-0">
+    <h1 class="modal-title fs-5 text-truncate">
+      <i class="fa-regular fa-shield-check me-2 text-muted"></i>
+      Ověření
+    </h1>
+    <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <form id="challenge" data-form-action="{{ action }}" novalidate>
+    <div class="modal-body">
+      <p class="text-center text-truncate">
+        Ověřovací kód odeslán na<br>
+        <strong title="{{ challenge.recipient }}">{{ challenge.recipient }}</strong>
+      </p>
+      {{ form.textbox('Kód', 'code') }}
+      {{ form.feedback('code') }}
+    </div>
+    <div class="modal-footer border-0 justify-content-center">
+      {% if token %}
+        {{ form.hidden('token', token) }}
+      {% endif %}
+      {{ button.submit('Pokračovat', 'check') }}
+    </div>
+  </form>
+</div>

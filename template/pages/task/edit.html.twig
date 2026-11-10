@@ -1,0 +1,33 @@
+{% import 'macro/buttons.html.twig' as button %}
+{% import 'macro/form.html.twig' as form %}
+
+{% set editing = item is defined and item %}
+
+<div class="modal-content border-0 p-4 shadow">
+  <div class="modal-header border-0">
+    <h1 class="modal-title fs-5 text-truncate">
+      <i class="fa-regular fa-square-check me-2 text-muted"></i>
+      {{ editing ? 'Upravit úkol' : 'Nový úkol' }}
+    </h1>
+    <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <form id="task_edit" data-form-action="{{ editing ? '/task/' ~ item.uuid : '/task' }}" novalidate>
+    <div class="modal-body">
+      <div class="mb-4">
+        {{ form.label('Název', 'title') }}
+        <input
+          class="form-control w-100 border-2"
+          type="text"
+          id="title"
+          name="title"
+          maxlength="255"
+          value="{{ editing ? item.title : '' }}"
+        >
+        {{ form.feedback('title') }}
+      </div>
+    </div>
+    <div class="modal-footer border-0 justify-content-center">
+      {{ button.submit('Uložit', 'floppy-disk') }}
+    </div>
+  </form>
+</div>

@@ -1,0 +1,31 @@
+meta {
+  name: Update task
+  type: http
+  seq: 17
+}
+
+post {
+  url: {{baseUrl}}/task/{{task_uuid}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{owner_access_token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Bruno updated task"
+  }
+}
+
+tests {
+  test("HTTP 204", () => {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

@@ -1,0 +1,25 @@
+meta {
+  name: Malformed login JSON
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/auth/access
+  body: text
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:text {
+  {not-json
+}
+
+tests {
+  test("HTTP 400", () => {
+    expect(res.getStatus()).to.equal(400);
+  });
+}

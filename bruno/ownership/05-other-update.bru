@@ -1,0 +1,29 @@
+meta {
+  name: Other user cannot update task
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/task/{{owner_task_uuid}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{other_access_token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Unauthorized overwrite"
+  }
+}
+
+tests {
+  test("Update hidden", () => { expect(res.getStatus()).to.equal(404); });
+}

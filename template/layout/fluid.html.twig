@@ -1,0 +1,15 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+  <div class="min-vh-100 d-flex align-items-center">
+    <div class="container" style="max-width: 450px;">
+      <div class="bg-white mt-lg-5 p-5 rounded-2 shadow">
+        <div class="text-center">
+          <img src="/assets/img/logo.png" alt="logo" class="logo">
+        </div>
+        {% block main %}{% endblock %}
+      </div>
+      {% include 'layout/footer.html.twig' %}
+    </div>
+  </div>
+{% endblock %}

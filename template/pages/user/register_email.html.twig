@@ -1,0 +1,24 @@
+{% extends 'layout/fluid.html.twig' %}
+
+{% import 'macro/buttons.html.twig' as button %}
+{% import 'macro/form.html.twig' as form %}
+
+{% block javascript %}
+  <script src="/assets/js/user/register-email.js"></script>
+{% endblock %}
+
+{% block main %}
+  <h6 class="my-5 text-center">Zadejte svůj e-mail</h6>
+  <form id="user_register_email" data-form-action="/user/{{ user.uuid }}/register/email" novalidate>
+    <div class="mb-5">
+      {{ form.email('E-mail', 'email', user.email) }}
+      {{ form.feedback('email') }}
+    </div>
+    <div class="text-center">
+      {% if token %}
+        {{ form.hidden('token', token) }}
+      {% endif %}
+      {{ button.submit('Pokračovat', 'check') }}
+    </div>
+  </form>
+{% endblock %}

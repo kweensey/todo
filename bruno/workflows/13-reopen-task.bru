@@ -1,0 +1,21 @@
+meta {
+  name: Reopen task
+  type: http
+  seq: 23
+}
+
+post {
+  url: {{baseUrl}}/task/{{task_uuid}}/reopen
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("HTTP 204", () => {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

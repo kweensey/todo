@@ -1,0 +1,28 @@
+meta {
+  name: Reject task update with missing title
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{baseUrl}}/task/{{task_uuid}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {}
+}
+
+tests {
+  test("HTTP 422", () => { expect(res.getStatus()).to.equal(422); });
+  test("Title validation error", () => { expect(res.getBody().invalid_parameters).to.have.property("title"); });
+}

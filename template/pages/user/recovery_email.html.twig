@@ -1,0 +1,24 @@
+{% extends 'layout/fluid.html.twig' %}
+
+{% import 'macro/buttons.html.twig' as button %}
+{% import 'macro/form.html.twig' as form %}
+
+{% block javascript %}
+  <script src="/assets/js/user/recovery-email.js"></script>
+{% endblock %}
+
+{% block main %}
+  <h6 class="my-5 text-center">Obnovení hesla</h6>
+  <form id="user_recovery_email" data-form-action="/user/recover" novalidate>
+    <div class="mb-3">
+      {{ form.email('E-mail', 'email') }}
+      {{ form.feedback('email') }}
+    </div>
+    <div class="mb-5 text-end">
+      <a href="/user/login">Vzpomněli jste si?</a>
+    </div>
+    <div class="text-center">
+      {{ button.submit('Pokračovat', 'check') }}
+    </div>
+  </form>
+{% endblock %}
